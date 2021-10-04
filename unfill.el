@@ -36,6 +36,12 @@
 
 ;;; Code:
 
+(defcustom unfill-fill-function #'fill-paragraph
+  "Which function to fill regions with when using `unfill-toggle'."
+  :type 'function
+  :group 'convenience
+  :local t)
+
 ;;;###autoload
 (defun unfill-paragraph ()
   "Replace newline chars in current paragraph by single spaces.
@@ -54,7 +60,8 @@ This command does the inverse of `fill-region'."
 
 ;;;###autoload
 (defun unfill-toggle ()
-  "Toggle filling/unfilling of the current region, or current paragraph if no region active."
+  "Toggle filling/unfilling of the current region, or current paragraph.
+If `unfill-fill-function' is set, it'll use that, else `fill-paragraph'."
   (interactive)
   (let (deactivate-mark
         (fill-column
@@ -62,7 +69,8 @@ This command does the inverse of `fill-region'."
              (progn (setq this-command nil)
                     most-positive-fixnum)
            fill-column)))
-    (call-interactively 'fill-paragraph)))
+    (call-interactively (or unfill-fill-function
+                            'fill-paragraph))))
 
 ;;;###autoload
 (define-obsolete-function-alias 'toggle-fill-unfill 'unfill-toggle "0.2")
